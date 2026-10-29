@@ -1,0 +1,883 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>コンパス用チーム分け</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#f3f4f8;
+--bg-2:#ffffff;
+--card:#ffffff;
+--line:#e3e5ee;
+--text:#171a2a;
+--text-sub:#6b7186;
+--text-faint:#9aa0b3;
+--accent:#ff3b5c;
+--accent-ink:#ffffff;
+--accent-soft:#ffe6eb;
+--blue:#1e8fff;
+--input-bg:#f7f8fb;
+--chip-bg:#eef0f6;
+--shadow:0 8px 24px rgba(23,26,42,.08);
+--radius:18px;
+}
+@media (prefers-color-scheme: dark){
+:root{
+--bg:#0e1018;
+--bg-2:#151826;
+--card:#1a1e30;
+--line:#2a2f47;
+--text:#f2f3f8;
+--text-sub:#a7adc2;
+--text-faint:#6f7690;
+--accent:#ff4d6a;
+--accent-soft:#3a1f2a;
+--input-bg:#121524;
+--chip-bg:#252a42;
+--shadow:0 8px 24px rgba(0,0,0,.35);
+}
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+font-family:"M PLUS Rounded 1c", system-ui, -apple-system, "Hiragino Maru Gothic ProN", sans-serif;
+background:var(--bg);
+color:var(--text);
+line-height:1.5;
+}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px 48px}
+/* intro */
+.intro{padding:6px 2px 16px}
+.intro h1{font-size:26px;line-height:1.25;margin:0 0 6px;font-weight:800;letter-spacing:.02em}
+.intro h1 .hl{color:var(--accent)}
+.intro p{margin:0;color:var(--text-sub);font-size:14px;font-weight:500}
+.stat-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.stat{
+background:var(--bg-2);border:1px solid var(--line);border-radius:999px;
+padding:6px 12px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px;
+}
+.stat b{font-size:15px}
+.stat .dot{width:7px;height:7px;border-radius:50%;background:var(--blue);flex:none}
+.stat.accent .dot{background:var(--accent)}
+
+.panel{
+background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+box-shadow:var(--shadow);padding:18px;margin-bottom:14px;
+}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.panel-head h2{font-size:15px;margin:0;font-weight:800;display:flex;align-items:center;gap:8px}
+.panel-head h2 svg{width:18px;height:18px;flex:none}
+.text-btn{background:none;border:none;color:var(--text-sub);font:inherit;font-size:13px;font-weight:700;cursor:pointer;padding:6px 4px}
+.text-btn:active{opacity:.6}
+
+/* add form */
+.add-row{display:flex;gap:8px}
+.add-row input{
+flex:1;min-width:0;background:var(--input-bg);border:1.5px solid var(--line);border-radius:12px;
+padding:13px 14px;font:inherit;font-size:16px;color:var(--text);outline:none;
+}
+.add-row input:focus{border-color:var(--blue)}
+.add-row input::placeholder{color:var(--text-faint)}
+.rank-select{
+flex:none;width:108px;background:var(--input-bg);border:1.5px solid var(--line);border-radius:12px;
+padding:0 8px;font:inherit;font-size:14px;font-weight:800;color:var(--text);outline:none;height:50px;
+}
+.rank-select:focus{border-color:var(--blue)}
+@media (max-width:480px){
+.add-row{flex-wrap:wrap}
+.add-row input{flex:1 1 100%}
+.rank-select{flex:1}
+.btn-add{flex:1;justify-content:center;padding:12px 18px}
+}
+.chip-rank{
+border:1.5px solid var(--line);background:var(--bg-2);border-radius:999px;
+font:inherit;font-size:11px;font-weight:800;color:var(--text-sub);padding:2px 4px;outline:none;max-width:86px;
+}
+.chip-rank.set{border-color:var(--blue);color:var(--blue);background:#e8f3ff}
+@media (prefers-color-scheme: dark){.chip-rank.set{background:#162a44}}
+.rank-tag{
+flex:none;font-size:11px;font-weight:800;border-radius:999px;padding:3px 8px;background:var(--chip-bg);color:var(--text-sub);border:1px solid var(--line);
+}
+.rank-tag.high{background:#fff1f2;color:#e11d48;border-color:#fecdd3}
+.rank-tag.mid{background:#eff6ff;color:#2563eb;border-color:#bfdbfe}
+.rank-tag.low{background:#f0fdf4;color:#15803d;border-color:#bbf7d0}
+@media (prefers-color-scheme: dark){
+.rank-tag.high{background:#3a1f2a;color:#fda4af;border-color:#7f1d2e}
+.rank-tag.mid{background:#162a44;color:#93c5fd;border-color:#1e3a5f}
+.rank-tag.low{background:#142e1e;color:#86efac;border-color:#14532d}
+}
+.team-meta{
+padding:8px 14px;font-size:12px;font-weight:800;color:var(--text-sub);background:var(--input-bg);
+display:flex;gap:10px;flex-wrap:wrap;border-bottom:1px solid var(--line);
+}
+.team-meta b{color:var(--text)}
+.btn-add{
+flex:none;background:var(--text);color:var(--bg-2);border:none;border-radius:12px;
+padding:0 18px;font:inherit;font-weight:800;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+}
+@media (prefers-color-scheme: dark){.btn-add{background:#f2f3f8;color:#121524}}
+.btn-add:active{transform:scale(.97)}
+.bulk{margin-top:14px}
+.bulk-label{font-size:13px;font-weight:700;color:var(--text-sub);margin:0 0 6px}
+.bulk textarea{
+width:100%;margin-top:8px;background:var(--input-bg);border:1.5px solid var(--line);border-radius:12px;
+padding:12px 14px;font:inherit;font-size:15px;color:var(--text);outline:none;resize:vertical;min-height:96px;
+}
+.bulk textarea:focus{border-color:var(--blue)}
+.bulk .bulk-btn{margin-top:8px;width:100%;background:var(--chip-bg);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px;font:inherit;font-weight:800;font-size:14px;cursor:pointer}
+.hint{font-size:12px;color:var(--text-faint);margin:8px 2px 0;font-weight:500}
+
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chips:empty{margin-top:0}
+.chip{
+display:inline-flex;align-items:center;gap:2px;background:var(--chip-bg);
+border-radius:999px;padding:7px 6px 7px 13px;font-weight:700;font-size:14px;
+animation:pop .18s ease;
+}
+.chip button{
+width:22px;height:22px;border-radius:50%;border:none;background:transparent;color:var(--text-sub);
+display:grid;place-items:center;cursor:pointer;padding:0;margin-left:2px;
+}
+.chip button svg{width:14px;height:14px}
+.chip button:active{background:rgba(0,0,0,.08)}
+.empty-msg{
+border:1.5px dashed var(--line);border-radius:12px;padding:18px 14px;text-align:center;
+color:var(--text-faint);font-size:13px;font-weight:700;margin-top:14px;
+}
+.dup-msg{display:none;margin-top:10px;font-size:13px;font-weight:700;color:var(--accent)}
+.dup-msg.show{display:block}
+
+/* settings */
+.setting-label{font-size:13px;font-weight:800;color:var(--text-sub);margin:0 0 8px}
+.seg{display:flex;background:var(--input-bg);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+.seg button{
+flex:1;border:none;background:transparent;color:var(--text-sub);font:inherit;font-weight:800;font-size:15px;
+padding:10px 0;border-radius:9px;cursor:pointer;
+}
+.seg button[aria-pressed="true"]{background:var(--card);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.seg button small{display:block;font-size:10px;font-weight:700;color:var(--text-faint)}
+.seg button[aria-pressed="true"] small{color:var(--accent)}
+.setting-block +.setting-block{margin-top:18px}
+.radio-list{display:flex;flex-direction:column;gap:8px}
+.radio-item{
+display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;
+background:var(--input-bg);border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;
+font:inherit;cursor:pointer;color:var(--text);
+}
+.radio-item .r{width:19px;height:19px;border-radius:50%;border:2px solid var(--text-faint);flex:none;margin-top:1px;position:relative}
+.radio-item[aria-checked="true"]{border-color:var(--blue);background:var(--card)}
+.radio-item[aria-checked="true"] .r{border-color:var(--blue)}
+.radio-item[aria-checked="true"] .r::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--blue)}
+.radio-item .t{font-weight:800;font-size:14px;display:block}
+.radio-item .d{font-size:12px;color:var(--text-sub);font-weight:500;display:block;margin-top:1px}
+.preview{
+margin-top:16px;background:var(--accent-soft);border-radius:12px;padding:12px 14px;
+font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px;
+}
+.preview svg{width:18px;height:18px;flex:none}
+.preview.warn{background:var(--input-bg);color:var(--text-sub);border:1px dashed var(--line)}
+
+/* main action */
+.btn-shuffle{
+width:100%;border:none;border-radius:16px;padding:18px 16px;cursor:pointer;
+background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:800;font-size:18px;
+display:flex;align-items:center;justify-content:center;gap:10px;
+box-shadow:0 10px 22px rgba(255,59,92,.32);transition:transform .08s ease, opacity .15s;
+}
+.btn-shuffle svg{width:22px;height:22px}
+.btn-shuffle:active{transform:scale(.985)}
+.btn-shuffle:disabled{opacity:.45;box-shadow:none;cursor:not-allowed}
+.btn-shuffle.shuffling svg{animation:spin .5s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+.action-note{text-align:center;font-size:12px;color:var(--text-faint);font-weight:700;margin:10px 0 0}
+
+/* results */
+#resultSection{display:none;margin-top:22px}
+#resultSection.show{display:block}
+.result-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.result-head h2{font-size:18px;margin:0;font-weight:800}
+.result-head h2 span{color:var(--text-sub);font-size:13px;font-weight:700;margin-left:6px}
+.result-actions{display:flex;gap:8px}
+.btn-sub{
+border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:10px;
+padding:9px 13px;font:inherit;font-weight:800;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+}
+.btn-sub svg{width:15px;height:15px}
+.btn-sub:active{transform:scale(.97)}
+.btn-sub.primary{background:var(--text);color:var(--bg-2);border-color:transparent}
+@media (prefers-color-scheme: dark){.btn-sub.primary{background:#f2f3f8;color:#121524}}
+.teams{display:grid;grid-template-columns:1fr;gap:12px}
+@media (min-width:560px){.teams{grid-template-columns:1fr 1fr}}
+.team{
+border-radius:16px;padding:0;overflow:hidden;border:1px solid var(--line);background:var(--card);
+box-shadow:var(--shadow);animation:pop .3s ease backwards;
+}
+.team-head{padding:11px 14px;display:flex;align-items:center;justify-content:space-between;color:#fff}
+.team-head .name{font-weight:800;font-size:15px;letter-spacing:.04em;display:flex;align-items:center;gap:8px}
+.team-head .count{font-size:12px;font-weight:800;background:rgba(255,255,255,.25);border-radius:999px;padding:2px 9px}
+.team ul{list-style:none;margin:0;padding:8px}
+.team li{
+display:flex;align-items:center;gap:10px;padding:10px 10px;font-weight:700;font-size:16px;
+border-radius:10px;
+}
+.team li + li{border-top:1px solid var(--line)}
+.team li .num{
+width:26px;height:26px;border-radius:8px;flex:none;display:grid;place-items:center;
+font-size:12px;font-weight:800;color:#fff;
+}
+.team.waiting .team-head{background:#8a90a6!important}
+.team.waiting li{color:var(--text-sub)}
+.copy-ok{
+display:none;margin-top:12px;text-align:center;font-size:13px;font-weight:800;color:#0a9d62;
+}
+.copy-ok.show{display:block}
+.scramble-box{
+display:none;border:1.5px dashed var(--line);border-radius:16px;padding:26px 16px;text-align:center;
+background:var(--card);
+}
+.scramble-box.show{display:block}
+.scramble-box .big{font-size:20px;font-weight:800;min-height:30px}
+.scramble-box .sub{font-size:12px;color:var(--text-faint);font-weight:700;margin-top:4px}
+footer{margin-top:28px;text-align:center;color:var(--text-faint);font-size:12px;font-weight:500;line-height:1.7}
+.nojs-note{
+background:#fff7e6;border:1.5px solid #f2b544;border-radius:14px;padding:14px 16px;margin-bottom:14px;
+font-size:14px;font-weight:700;line-height:1.7;color:#7a4b00;
+}
+.nojs-note b{color:#b91c1c}
+@media (prefers-color-scheme: dark){
+.nojs-note{background:#33270e;border-color:#8a6d1f;color:#f3d38a}
+.nojs-note b{color:#fda4af}
+}
+@media (prefers-reduced-motion: reduce){
+*{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<noscript>
+<div class="nojs-note">
+このページはJavaScriptで動いているため、<b>iPhoneの「ファイル」アプリのプレビューで開くと、ボタンが反応しません。</b><br>
+スマホで使うときは、ダウンロードしたファイルではなく、<b>このページの共有リンクをSafariなどのブラウザで開いて</b>ください。そのままチーム分けが使えます。<br>
+（PCの場合は、ダウンロードしたファイルをダブルクリックで開けばそのまま動きます）
+</div>
+</noscript>
+
+<div class="intro">
+<h1>3人1組、<span class="hl">ランダム</span>で<br>パッとチーム分け</h1>
+<p>名前を入れてボタンを押すだけ。何組でも一気に分けられます。ランク（S1〜S9）を考慮して、強さが均等になる分け方も選べます。</p>
+<div class="stat-row" aria-live="polite">
+<span class="stat"><span class="dot"></span>メンバー <b id="statMembers">0</b>人</span>
+<span class="stat accent"><span class="dot"></span>できるチーム <b id="statTeams">0</b>組</span>
+<span class="stat">余り <b id="statRest">0</b>人</span>
+</div>
+</div>
+
+<!-- Members -->
+<section class="panel" aria-labelledby="h-members">
+<div class="panel-head">
+<h2 id="h-members">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+メンバー
+</h2>
+<button class="text-btn" id="clearBtn" type="button">全員消す</button>
+</div>
+
+<form class="add-row" id="addForm">
+<input id="nameInput" type="text" placeholder="名前を入力（例：のん）" autocomplete="off" enterkeyhint="done" maxlength="20" aria-label="メンバー名" />
+<select id="rankSelect" class="rank-select" aria-label="ランク">
+<option value="">ランク未設定</option>
+<option value="1">S1</option>
+<option value="2">S2</option>
+<option value="3">S3</option>
+<option value="4">S4</option>
+<option value="5">S5</option>
+<option value="6">S6</option>
+<option value="7">S7</option>
+<option value="8">S8</option>
+<option value="9">S9</option>
+</select>
+<button class="btn-add" type="submit">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+追加
+</button>
+</form>
+
+<div class="bulk">
+      <p class="bulk-label">まとめて貼り付けで追加する（1行に1人／ランクは名前の後ろに S5 のように）</p>
+      <textarea id="bulkInput" placeholder="1行に1人ずつ書いて貼り付け&#10;のん S9&#10;たろ S5&#10;はな" aria-label="まとめて追加"></textarea>
+      <button class="bulk-btn" id="bulkBtn" type="button">この内容で追加する</button>
+    </div>
+
+<p class="dup-msg" id="dupMsg">同じ名前がすでにあります。名前を変えて追加してね。</p>
+
+<div class="chips" id="chips"></div>
+<div class="empty-msg" id="emptyMsg">まだ誰もいません。上の入力欄から名前を追加してね。</div>
+<p class="hint">チップの × で1人ずつ消せます。Enterでも追加できます。各チップでランク（S1〜S9）をあとから変更できます。数字が大きいほど強い想定です。ランク未設定の人は、バランス計算では真ん中の S5 として扱います。</p>
+</section>
+
+<!-- Settings -->
+<section class="panel" aria-labelledby="h-settings">
+<div class="panel-head">
+<h2 id="h-settings">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0.33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0.33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+分け方
+</h2>
+</div>
+
+<div class="setting-block">
+<p class="setting-label">分け方モード</p>
+<div class="radio-list" id="modeList" role="radiogroup" aria-label="分け方モード">
+<button type="button" class="radio-item" role="radio" aria-checked="true" data-splitmode="random">
+<span class="r"></span>
+<span><span class="t">ランダムで分ける</span><span class="d">今まで通り、完全にランダムにシャッフルします</span></span>
+</button>
+<button type="button" class="radio-item" role="radio" aria-checked="false" data-splitmode="rank">
+<span class="r"></span>
+<span><span class="t">ランクを考慮して分ける（S1〜S9）</span><span class="d">数字が大きいほど強い想定。各チームの合計・平均ランクがなるべく均等になるように、強い人と弱い人が偏らないよう振り分けます。同ランク同士はランダムです</span></span>
+</button>
+</div>
+</div>
+
+<div class="setting-block">
+<p class="setting-label">1チームの人数</p>
+<div class="seg" id="sizeSeg" role="group" aria-label="1チームの人数">
+<button type="button" data-size="2">2人</button>
+<button type="button" data-size="3" aria-pressed="true">3人<small>コンパス標準</small></button>
+<button type="button" data-size="4">4人</button>
+<button type="button" data-size="5">5人</button>
+</div>
+</div>
+
+<div class="setting-block">
+<p class="setting-label">余った人の扱い</p>
+<div class="radio-list" id="restList" role="radiogroup" aria-label="余った人の扱い">
+<button type="button" class="radio-item" role="radio" aria-checked="true" data-mode="wait">
+<span class="r"></span>
+<span><span class="t">待機にする</span><span class="d">例：7人 → 3人 × 2組 ＋ 待機1人。次の試合で交代しやすい</span></span>
+</button>
+<button type="button" class="radio-item" role="radio" aria-checked="false" data-mode="fill">
+<span class="r"></span>
+<span><span class="t">チームに入れ込む</span><span class="d">例：7人 → 4人 ＋ 3人。全員が必ずどこかのチームに入る</span></span>
+</button>
+<button type="button" class="radio-item" role="radio" aria-checked="false" data-mode="balance">
+<span class="r"></span>
+<span><span class="t">なるべく均等にする</span><span class="d">例：7人 → 3人 ＋ 2人 ＋ 2人。人数差を最小にして分ける</span></span>
+</button>
+</div>
+</div>
+
+<div class="preview" id="previewBox">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+<span id="previewText">メンバーを追加すると、分け方の見通しがここに出ます</span>
+</div>
+</section>
+
+<button class="btn-shuffle" id="shuffleBtn" type="button" disabled>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h4l10-12h4"/><path d="M2 6h4l2.5 3"/><path d="M13.5 15L16 18h4"/><path d="M18 4l2 2-2 2"/><path d="M18 16l2 2-2 2"/></svg>
+<span id="shuffleLabel">チーム分けする！</span>
+</button>
+<p class="action-note" id="actionNote">あと3人追加するとチーム分けできます</p>
+
+<!-- Result -->
+<section id="resultSection" aria-labelledby="h-result">
+<div class="scramble-box" id="scrambleBox">
+<div class="big" id="scrambleText">シャッフル中…</div>
+<div class="sub">運命の組み合わせを決めています</div>
+</div>
+
+<div id="resultBody">
+<div class="result-head">
+<h2 id="h-result">結果<span id="resultMeta"></span></h2>
+<div class="result-actions">
+<button class="btn-sub" id="copyBtn" type="button">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+コピー
+</button>
+<button class="btn-sub primary" id="reshuffleBtn" type="button">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+もう一度
+</button>
+</div>
+</div>
+<div class="teams" id="teamsGrid"></div>
+<p class="copy-ok" id="copyOk">コピーしました！ LINEやDiscordにそのまま貼れます</p>
+</div>
+</section>
+
+<footer>
+人数が変わったら、もう一度「チーム分けする！」を押せば<br>新しい組み合わせで分け直せます。
+</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var members = []; // [{name, rank: null|1..9}] rank is S value, larger = stronger
+var teamSize = 3;
+var restMode = "wait"; // wait | fill | balance
+var splitMode = "random"; // random | rank
+var lastResult = null; // { teams: [[member..]], waiting: [member..]}
+var shuffling = false;
+
+var $ = function(id){ return document.getElementById(id);};
+var chipsEl = $("chips"), emptyMsg = $("emptyMsg"), nameInput = $("nameInput");
+var statMembers = $("statMembers"), statTeams = $("statTeams"), statRest = $("statRest");
+var previewBox = $("previewBox"), previewText = $("previewText");
+var shuffleBtn = $("shuffleBtn"), shuffleLabel = $("shuffleLabel"), actionNote = $("actionNote");
+var resultSection = $("resultSection"), teamsGrid = $("teamsGrid"), resultMeta = $("resultMeta");
+var scrambleBox = $("scrambleBox"), scrambleText = $("scrambleText"), resultBody = $("resultBody");
+var dupMsg = $("dupMsg"), copyOk = $("copyOk");
+
+var TEAM_COLORS = ["#ff3b5c","#1e8fff","#ff8a1e","#12b76a","#7c5cff","#ec4899","#0ea5a4","#eab308","#f43f5e","#3b82f6","#22c55e","#a855f7"];
+var TEAM_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+function teamName(i){
+if(i < 26) return "チーム " + TEAM_LETTERS[i];
+return "チーム " + (i+1);
+}
+
+function plan(n, size, mode){
+// returns { sizes: [..], waiting: count}
+if(n === 0) return { sizes: [], waiting: 0};
+if(mode === "balance"){
+var count = Math.ceil(n / size);
+if(count === 0) return { sizes: [], waiting: n};
+var base = Math.floor(n / count);
+var extra = n % count;
+var sizes = [];
+for(var i=0;i<count;i++) sizes.push(base + (i < extra? 1: 0));
+return { sizes: sizes, waiting: 0};
+}
+if(mode === "fill"){
+var full = Math.floor(n / size);
+var rest = n % size;
+if(full === 0) return { sizes: [n], waiting: 0};
+var s2 = [];
+for(var j=0;j<full;j++) s2.push(size);
+// distribute rest 1 by 1
+var k = 0;
+while(rest > 0){ s2[k % s2.length]++; rest--; k++;}
+return { sizes: s2, waiting: 0};
+}
+// wait
+var f = Math.floor(n / size);
+var r = n % size;
+var s3 = [];
+for(var m=0;m<f;m++) s3.push(size);
+// if not enough for one team, everyone waits in a single partial group shown as waiting
+return { sizes: s3, waiting: r};
+}
+
+function effectiveRank(m){ return (m && m.rank) ? m.rank : 5; }
+function rankLabel(m){ return (m && m.rank) ? ("S" + m.rank) : "未設定"; }
+function rankTagClass(m){
+if(!m || !m.rank) return "rank-tag";
+if(m.rank >= 7) return "rank-tag high";
+if(m.rank >= 4) return "rank-tag mid";
+return "rank-tag low";
+}
+function teamRankStats(team){
+var sum = 0;
+team.forEach(function(m){ sum += effectiveRank(m); });
+var avg = team.length ? (sum / team.length) : 0;
+return { sum: sum, avg: avg };
+}
+
+function renderMembers(){
+chipsEl.innerHTML = "";
+members.forEach(function(member, idx){
+var chip = document.createElement("span");
+chip.className = "chip";
+var label = document.createElement("span");
+label.textContent = member.name;
+var sel = document.createElement("select");
+sel.className = "chip-rank" + (member.rank ? " set" : "");
+sel.setAttribute("aria-label", member.name + "のランク");
+var opts = ['<option value="">未設定</option>'];
+for(var r=1;r<=9;r++){ opts.push('<option value="'+r+'"'+(member.rank===r?' selected':'')+'>S'+r+'</option>'); }
+sel.innerHTML = opts.join("");
+sel.addEventListener("change", function(){
+var v = sel.value ? parseInt(sel.value,10) : null;
+members[idx].rank = v;
+renderMembers();
+});
+var btn = document.createElement("button");
+btn.type = "button";
+btn.setAttribute("aria-label", member.name + "を削除");
+btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+btn.addEventListener("click", function(){
+members.splice(idx, 1);
+renderMembers();
+});
+chip.appendChild(label);
+chip.appendChild(sel);
+chip.appendChild(btn);
+chipsEl.appendChild(chip);
+});
+emptyMsg.style.display = members.length? "none": "block";
+updateStats();
+}
+
+function updateStats(){
+var n = members.length;
+var p = plan(n, teamSize, restMode);
+statMembers.textContent = n;
+statTeams.textContent = p.sizes.length;
+statRest.textContent = p.waiting;
+
+// preview
+if(n === 0){
+previewBox.classList.add("warn");
+previewText.textContent = "メンバーを追加すると、分け方の見通しがここに出ます";
+} else if(p.sizes.length === 0){
+previewBox.classList.add("warn");
+previewText.textContent = n + "人ではまだ1チーム作れません（" + teamSize + "人必要）";
+} else {
+previewBox.classList.remove("warn");
+var parts = p.sizes.map(function(s){ return s + "人";}).join(" ＋ ");
+var txt = n + "人 → " + parts + " の " + p.sizes.length + "組";
+if(p.waiting > 0) txt += " ＋ 待機" + p.waiting + "人";
+if(splitMode === "rank") txt += "（ランク考慮：平均が均等になるよう調整）";
+previewText.textContent = txt;
+}
+
+// action button state
+var can = n >= 2 && p.sizes.length >= 1 &&!shuffling;
+// For wait mode with n < size, cannot. For fill/balance with n>=2, can make 1 group.
+if(restMode!== "wait" && n >= 2) can =!shuffling;
+shuffleBtn.disabled =!can;
+if(shuffling){
+actionNote.textContent = "シャッフル中…";
+} else if(n === 0){
+actionNote.textContent = "まずはメンバーを追加してね";
+} else if(n < teamSize && restMode === "wait"){
+actionNote.textContent = "あと" + (teamSize - n) + "人追加するとチーム分けできます";
+} else if(p.sizes.length === 1 && restMode === "wait"){
+actionNote.textContent = "この人数だと1組だけできます";
+} else {
+actionNote.textContent = p.sizes.length + "組に分けられます。何度でも引き直しOK";
+}
+}
+
+function parseEntry(raw){
+if(raw && typeof raw === "object"){ return { name: (raw.name||"").trim(), rank: raw.rank ? parseInt(raw.rank,10) : null }; }
+var s = (raw || "").trim();
+if(!s) return null;
+var rank = null;
+var m = s.match(/^(.*?)[\s\t,、]*[Ss]([1-9])\s*$/);
+if(m && m[1].trim()){ s = m[1].trim(); rank = parseInt(m[2],10); }
+if(s.length > 20) s = s.slice(0,20);
+return { name: s, rank: rank };
+}
+function hasMember(name){ return members.some(function(mm){ return mm.name === name; }); }
+function addNames(list){
+var added = 0, dup = false;
+list.forEach(function(raw){
+var entry = parseEntry(raw);
+if(!entry || !entry.name) return;
+if(hasMember(entry.name)){ dup = true; return;}
+members.push(entry);
+added++;
+});
+if(dup){
+dupMsg.classList.add("show");
+setTimeout(function(){ dupMsg.classList.remove("show");}, 2600);
+}
+if(added) renderMembers();
+return added;
+}
+
+$("addForm").addEventListener("submit", function(e){
+e.preventDefault();
+var v = nameInput.value;
+if(!v.trim()) return;
+var rankVal = $("rankSelect").value;
+addNames([{ name: v, rank: rankVal ? parseInt(rankVal,10) : null }]);
+nameInput.value = "";
+nameInput.focus();
+});
+
+$("bulkBtn").addEventListener("click", function(){
+var text = $("bulkInput").value;
+var lines = text.split(/\r?\n/);
+addNames(lines);
+$("bulkInput").value = "";
+});
+
+$("clearBtn").addEventListener("click", function(){
+if(!members.length) return;
+members = [];
+lastResult = null;
+resultSection.classList.remove("show");
+renderMembers();
+});
+
+// size seg
+var segBtns = $("sizeSeg").querySelectorAll("button");
+segBtns.forEach(function(btn){
+btn.addEventListener("click", function(){
+segBtns.forEach(function(b){ b.setAttribute("aria-pressed","false");});
+btn.setAttribute("aria-pressed","true");
+teamSize = parseInt(btn.getAttribute("data-size"), 10);
+updateStats();
+});
+});
+
+// split mode
+var modeItems = $("modeList").querySelectorAll(".radio-item");
+modeItems.forEach(function(item){
+item.addEventListener("click", function(){
+modeItems.forEach(function(i){ i.setAttribute("aria-checked","false");});
+item.setAttribute("aria-checked","true");
+splitMode = item.getAttribute("data-splitmode");
+shuffleLabel.textContent = splitMode === "rank" ? "ランク考慮でチーム分けする！" : "チーム分けする！";
+updateStats();
+});
+});
+
+// rest mode
+var radioItems = $("restList").querySelectorAll(".radio-item");
+radioItems.forEach(function(item){
+item.addEventListener("click", function(){
+radioItems.forEach(function(i){ i.setAttribute("aria-checked","false");});
+item.setAttribute("aria-checked","true");
+restMode = item.getAttribute("data-mode");
+updateStats();
+});
+});
+
+function secureShuffle(arr){
+var a = arr.slice();
+var rand = new Uint32Array(a.length);
+if(window.crypto && window.crypto.getRandomValues){
+window.crypto.getRandomValues(rand);
+} else {
+for(var i=0;i<rand.length;i++) rand[i] = Math.floor(Math.random()*4294967296);
+}
+for(var j=a.length-1;j>0;j--){
+var k = rand[j] % (j+1);
+var tmp = a[j]; a[j] = a[k]; a[k] = tmp;
+}
+return a;
+}
+
+function buildResult(){
+var p = plan(members.length, teamSize, restMode);
+if(splitMode === "rank"){
+// Shuffle first so equal ranks are random, then sort strongest first (stable in modern browsers)
+var shuffledFirst = secureShuffle(members);
+var sorted = shuffledFirst.slice().sort(function(a,b){ return effectiveRank(b) - effectiveRank(a); });
+var teamsR = p.sizes.map(function(){ return []; });
+var sums = p.sizes.map(function(){ return 0; });
+var waitingR = [];
+sorted.forEach(function(member){
+var candidates = [];
+for(var ti=0; ti<teamsR.length; ti++){
+if(teamsR[ti].length < p.sizes[ti]) candidates.push(ti);
+}
+if(!candidates.length){ waitingR.push(member); return; }
+var minSum = Math.min.apply(null, candidates.map(function(ti){ return sums[ti]; }));
+var tied = candidates.filter(function(ti){ return sums[ti] === minSum; });
+// among tied, prefer smaller team, then random
+var minLen = Math.min.apply(null, tied.map(function(ti){ return teamsR[ti].length; }));
+tied = tied.filter(function(ti){ return teamsR[ti].length === minLen; });
+var chosen = tied[Math.floor(Math.random()*tied.length)];
+teamsR[chosen].push(member);
+sums[chosen] += effectiveRank(member);
+});
+// Shuffle inside each team so strongest isn't always listed first in a fixed pattern? Keep rank order for readability: sort each team by rank desc
+teamsR.forEach(function(t){ t.sort(function(a,b){ return effectiveRank(b)-effectiveRank(a); }); });
+return { teams: teamsR, waiting: waitingR };
+}
+var shuffled = secureShuffle(members);
+var teams = [];
+var idx = 0;
+p.sizes.forEach(function(s){
+teams.push(shuffled.slice(idx, idx+s));
+idx += s;
+});
+var waiting = shuffled.slice(idx);
+return { teams: teams, waiting: waiting};
+}
+
+function renderResult(res){
+lastResult = res;
+teamsGrid.innerHTML = "";
+var totalTeams = res.teams.length;
+resultMeta.textContent = members.length + "人 / " + totalTeams + "組" + (res.waiting.length? " ＋ 待機" + res.waiting.length + "人": "") + (splitMode==="rank" ? " ・ ランク考慮" : "");
+
+res.teams.forEach(function(team, ti){
+var color = TEAM_COLORS[ti % TEAM_COLORS.length];
+var card = document.createElement("article");
+card.className = "team";
+card.style.animationDelay = (ti * 70) + "ms";
+var head = document.createElement("div");
+head.className = "team-head";
+head.style.background = color;
+head.innerHTML = '<span class="name">' + teamName(ti) + '</span><span class="count">' + team.length + '人</span>';
+card.appendChild(head);
+if(splitMode === "rank"){
+var stats = teamRankStats(team);
+var meta = document.createElement("div");
+meta.className = "team-meta";
+meta.innerHTML = '<span>合計ランク <b>' + stats.sum + '</b></span><span>平均 <b>S' + stats.avg.toFixed(1) + '</b></span><span style="font-weight:500">未設定はS5で計算</span>';
+card.appendChild(meta);
+}
+var ul = document.createElement("ul");
+team.forEach(function(member, ni){
+var li = document.createElement("li");
+var num = document.createElement("span");
+num.className = "num";
+num.style.background = color;
+num.textContent = ni+1;
+var span = document.createElement("span");
+span.textContent = member.name;
+span.style.flex = "1";
+var tag = document.createElement("span");
+tag.className = rankTagClass(member);
+tag.textContent = rankLabel(member);
+li.appendChild(num);
+li.appendChild(span);
+li.appendChild(tag);
+ul.appendChild(li);
+});
+card.appendChild(ul);
+teamsGrid.appendChild(card);
+});
+
+if(res.waiting.length){
+var wcard = document.createElement("article");
+wcard.className = "team waiting";
+wcard.style.animationDelay = (res.teams.length * 70) + "ms";
+var whead = document.createElement("div");
+whead.className = "team-head";
+whead.innerHTML = '<span class="name">待機・観戦</span><span class="count">' + res.waiting.length + '人</span>';
+var wul = document.createElement("ul");
+res.waiting.forEach(function(member, ni){
+var li = document.createElement("li");
+var num = document.createElement("span");
+num.className = "num";
+num.style.background = "#8a90a6";
+num.textContent = ni+1;
+var span = document.createElement("span");
+span.textContent = member.name;
+span.style.flex = "1";
+var tag = document.createElement("span");
+tag.className = rankTagClass(member);
+tag.textContent = rankLabel(member);
+li.appendChild(num);
+li.appendChild(span);
+li.appendChild(tag);
+wul.appendChild(li);
+});
+wcard.appendChild(whead);
+wcard.appendChild(wul);
+teamsGrid.appendChild(wcard);
+}
+copyOk.classList.remove("show");
+}
+
+function doShuffle(){
+if(shuffling || members.length < 2) return;
+shuffling = true;
+shuffleBtn.disabled = true;
+shuffleBtn.classList.add("shuffling");
+shuffleLabel.textContent = "シャッフル中…";
+updateStats();
+
+resultSection.classList.add("show");
+resultBody.style.display = "none";
+scrambleBox.querySelector(".sub").textContent = splitMode === "rank" ? "ランクの合計・平均が均等になるよう調整しています" : "運命の組み合わせを決めています";
+scrambleBox.classList.add("show");
+try{ resultSection.scrollIntoView({ behavior: "smooth", block: "start"}); }catch(e){ try{ resultSection.scrollIntoView(); }catch(e2){} }
+
+var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+var maxTicks = reduce ? 2 : 9;
+var ticks = 0;
+var timer = setInterval(function(){
+ticks++;
+// scramble display: pick 3 random names
+var picks = secureShuffle(members).slice(0, Math.min(3, members.length));
+scrambleText.textContent = picks.map(function(m){ return m.name; }).join(" ・ ");
+if(splitMode === "rank" && ticks === 1){ scrambleBox.querySelector(".sub").textContent = "ランクの合計・平均が均等になるよう調整しています"; }
+if(ticks >= maxTicks){
+clearInterval(timer);
+var res = buildResult();
+scrambleBox.classList.remove("show");
+resultBody.style.display = "";
+renderResult(res);
+shuffling = false;
+shuffleBtn.classList.remove("shuffling");
+shuffleLabel.textContent = splitMode === "rank" ? "ランク考慮でチーム分けする！" : "チーム分けする！";
+updateStats();
+// scroll result into view again after render
+setTimeout(function(){
+var y = resultSection.getBoundingClientRect().top + window.scrollY - 12;
+try{ window.scrollTo({ top: y, behavior: reduce? "auto": "smooth"}); }catch(e){ window.scrollTo(0, y); }
+}, 30);
+}
+}, 70);
+}
+
+shuffleBtn.addEventListener("click", doShuffle);
+$("reshuffleBtn").addEventListener("click", doShuffle);
+
+function resultToText(){
+if(!lastResult) return "";
+var lines = [];
+lines.push("【チーム分け結果" + (splitMode==="rank" ? "（ランク考慮）" : "") + "】 " + members.length + "人 / " + lastResult.teams.length + "組");
+lastResult.teams.forEach(function(team, ti){
+lines.push("");
+var stats = teamRankStats(team);
+var headLine = teamName(ti) + "（" + team.length + "人）";
+if(splitMode==="rank") headLine += " 合計" + stats.sum + " / 平均S" + stats.avg.toFixed(1);
+lines.push(headLine);
+team.forEach(function(member){ lines.push("・" + member.name + (member.rank ? "（S" + member.rank + "）" : ""));});
+});
+if(lastResult.waiting.length){
+lines.push("");
+lines.push("待機・観戦（" + lastResult.waiting.length + "人）");
+lastResult.waiting.forEach(function(member){ lines.push("・" + member.name + (member.rank ? "（S" + member.rank + "）" : ""));});
+}
+if(splitMode==="rank") lines.push("", "※ランク未設定はS5として計算");
+return lines.join("\n");
+}
+
+$("copyBtn").addEventListener("click", function(){
+var text = resultToText();
+if(!text) return;
+function done(){
+copyOk.classList.add("show");
+setTimeout(function(){ copyOk.classList.remove("show");}, 3000);
+}
+if(navigator.clipboard && navigator.clipboard.writeText){
+navigator.clipboard.writeText(text).then(done).catch(function(){ fallbackCopy(text); done();});
+} else {
+fallbackCopy(text); done();
+}
+});
+function fallbackCopy(text){
+var ta = document.createElement("textarea");
+ta.value = text;
+ta.style.position = "fixed"; ta.style.opacity = "0";
+document.body.appendChild(ta);
+ta.select();
+try{ document.execCommand("copy");}catch(e){}
+document.body.removeChild(ta);
+}
+
+renderMembers();
+})();
+</script>
+</body>
+</html>
